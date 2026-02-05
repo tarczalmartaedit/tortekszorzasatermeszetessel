@@ -1,0 +1,606 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Html, törtek szorzása egész számmal</title>
+  <style>
+    :root{
+      --sky1:#86c6ff;
+      --sky2:#d7f3ff;
+      --field1:#2f8f3d;
+      --field2:#1f6f2f;
+      --soil1:#6b3f1f;
+      --soil2:#4d2a14;
+      --panel:#fff7e6;
+      --panel2:#ffefcc;
+      --border:#9a6b3d;
+      --border2:#caa57b;
+      --text:#2a1a0f;
+      --muted:#5a3a24;
+      --good:#178a2f;
+      --bad:#b61d1d;
+      --btn:#ffd77a;
+      --btn2:#f2b94a;
+      --shadow: rgba(0,0,0,.25);
+      --accent:#3dbb4f;
+    }
+
+    html, body{ height: 100%; }
+    body{
+      margin:0;
+      color:var(--text);
+      background:
+        radial-gradient(800px 500px at 20% 20%, rgba(255,255,255,.65), transparent 55%),
+        linear-gradient(180deg, var(--sky1), var(--sky2) 45%, var(--field1) 45%, var(--field2) 70%, var(--soil1) 70%, var(--soil2));
+      font-family: ui-rounded, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .wrap{ max-width: 980px; margin: 0 auto; padding: 18px; }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      margin: 10px 0 16px;
+    }
+
+    .logo{
+      width:56px;height:56px;
+      border:4px solid var(--border);
+      box-shadow: 0 10px 0 var(--shadow);
+      background:
+        linear-gradient(0deg, #7a4a25 0 42%, #3dbb4f 42% 100%);
+      position:relative;
+      overflow:hidden;
+    }
+
+    .logo::before{
+      content:"";
+      position:absolute;
+      left:-8px; top:26px;
+      width:80px; height:22px;
+      background:
+        repeating-linear-gradient(90deg,
+          rgba(0,0,0,.10) 0 10px,
+          transparent 10px 22px);
+      transform: rotate(-8deg);
+      opacity:.35;
+    }
+
+    h1{ margin:0; font-size: 22px; }
+    .subtitle{ color: rgba(42,26,15,.75); margin-top: 4px; font-size: 13px; }
+
+    .grid{ display:grid; grid-template-columns: 1.2fr .8fr; gap:14px; }
+    @media (max-width: 860px){ .grid{ grid-template-columns:1fr; } }
+
+    .panel{
+      background: linear-gradient(180deg, var(--panel2), var(--panel));
+      border:4px solid var(--border);
+      box-shadow: 0 10px 0 var(--shadow);
+      padding: 14px;
+    }
+
+    .panel h2{ margin:0 0 10px; font-size: 16px; color: var(--muted); text-transform: uppercase; letter-spacing:.4px; }
+
+    .row{ display:flex; gap:10px; flex-wrap:wrap; }
+
+    .card{
+      background: rgba(255,255,255,.55);
+      border: 3px solid var(--border2);
+      box-shadow: 0 6px 0 rgba(0,0,0,.18);
+      padding: 12px;
+      min-width: 220px;
+      flex: 1;
+    }
+
+    .label{ font-size: 12px; color: rgba(90,58,36,.85); margin-bottom: 6px; text-transform: uppercase; letter-spacing:.3px; }
+
+    .btn{
+      appearance:none;
+      border: 3px solid var(--border);
+      background: linear-gradient(180deg, var(--btn), var(--btn2));
+      color: var(--text);
+      padding: 10px 12px;
+      font-weight: 800;
+      cursor:pointer;
+      box-shadow: 0 6px 0 rgba(0,0,0,.25);
+      border-radius: 10px;
+      text-transform: uppercase;
+    }
+    .btn:active{ transform: translateY(3px); box-shadow: 0 3px 0 rgba(0,0,0,.25); }
+    .btn.secondary{ background: linear-gradient(180deg, #f3f3f3, #d8d8d8); }
+    .btn.good{ background: linear-gradient(180deg, #a7f08b, #55c96b); }
+
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 10px;
+      border: 3px solid var(--border2);
+      background: rgba(255,255,255,.55);
+      box-shadow: 0 4px 0 rgba(0,0,0,.18);
+      margin: 4px 6px 0 0;
+      font-size: 12px;
+      color: rgba(90,58,36,.85);
+      text-transform: uppercase;
+      border-radius: 999px;
+    }
+    .dot{ width:10px; height:10px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 0 2px rgba(0,0,0,.12) inset; }
+
+    select, input{
+      width: 100%;
+      padding: 10px;
+      border-radius: 10px;
+      border: 3px solid var(--border2);
+      background: rgba(255,255,255,.75);
+      color: var(--text);
+      outline: none;
+      box-shadow: 0 6px 0 rgba(0,0,0,.18);
+      font-weight: 800;
+    }
+
+    .big{ font-size: 22px; line-height: 1.35; }
+
+    .fraction{
+      display:inline-flex;
+      flex-direction:column;
+      align-items:center;
+      min-width: 44px;
+      padding: 0 6px;
+      vertical-align: middle;
+      font-weight: 900;
+    }
+    .fraction .top{ border-bottom: 3px solid rgba(42,26,15,.65); padding: 0 8px 2px; }
+    .fraction .bot{ padding: 2px 8px 0; }
+
+    .status{
+      margin-top: 10px;
+      padding: 10px;
+      border: 3px solid var(--border2);
+      background: rgba(255,255,255,.6);
+      box-shadow: 0 6px 0 rgba(0,0,0,.18);
+      min-height: 48px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      border-radius: 12px;
+    }
+
+    .status .msg{ font-weight: 900; }
+    .status .msg.good{ color: var(--good); }
+    .status .msg.bad{ color: var(--bad); }
+
+    .tiny{ font-size: 12px; color: rgba(90,58,36,.85); }
+
+    .bar{
+      height: 14px;
+      border: 3px solid var(--border2);
+      background: rgba(255,255,255,.55);
+      box-shadow: 0 6px 0 rgba(0,0,0,.18);
+      overflow:hidden;
+      border-radius: 999px;
+    }
+    .bar > div{ height:100%; background: linear-gradient(90deg, rgba(61,187,79,.95), rgba(61,187,79,.45)); width:0%; }
+
+    .kbd{
+      border: 2px solid var(--border2);
+      padding: 2px 6px;
+      background: rgba(255,255,255,.65);
+      box-shadow: 0 3px 0 rgba(0,0,0,.14);
+      font-size: 12px;
+      color: rgba(90,58,36,.85);
+      border-radius: 8px;
+    }
+
+    .hr{ height: 4px; background: rgba(61,187,79,.25); border: 0; margin: 12px 0; border-radius: 999px; }
+    .hidden{ display:none !important; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <div class="logo" aria-hidden="true"></div>
+      <div>
+        <h1>Html, törtek szorzása egész számmal</h1>
+        <div class="subtitle">Farm-játék hangulat • Szorozz törteket egész számmal és egyszerűsíts!</div>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="panel" id="startPanel">
+        <h2>Beállítások</h2>
+
+        <div class="row">
+          <div class="card">
+            <div class="label">Szint (farm karakter)</div>
+            <select id="levelSelect" aria-label="Szint választása">
+              <option value="easy">Gazda Pista (könnyű)</option>
+              <option value="medium">Molnár Mari (közepes)</option>
+              <option value="hard">Vegyes Kihívás (nehéz)</option>
+            </select>
+            <div class="tiny" style="margin-top:8px;">
+              <span class="chip"><span class="dot"></span> Könnyű: csak a számlálót kell szorozni</span>
+              <span class="chip"><span class="dot"></span> Közepes: a nevező osztható a számmal (egyszerűsítés)</span>
+              <span class="chip"><span class="dot"></span> Nehéz: vegyesen könnyű és közepes típus</span>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="label">Feladatok száma</div>
+            <select id="countSelect" aria-label="Feladatok száma">
+              <option>10</option>
+              <option>20</option>
+              <option>30</option>
+              <option>40</option>
+              <option>50</option>
+            </select>
+
+            <div class="tiny" style="margin-top:10px;">
+              A választ írd <b>a/b</b> formában (pl. <b>9/10</b>) vagy egész számként (pl. <b>3</b>).
+            </div>
+          </div>
+        </div>
+
+        <hr class="hr" />
+
+        <div class="row">
+          <button class="btn good" id="startBtn">Indítás</button>
+          <button class="btn secondary" id="howBtn">Hogyan működik?</button>
+        </div>
+
+        <div class="status hidden" id="howBox" role="note" aria-live="polite">
+          <div class="tiny">
+            <div style="font-weight:900; margin-bottom:6px;">Gyors útmutató</div>
+            <div>1) Válassz szintet és feladatszámot.</div>
+            <div>2) Oldd meg: <b>(tört) × (egész)</b>.</div>
+            <div>3) Írd be a <b>legegyszerűbb</b> alakot.</div>
+            <div>4) <span class="kbd">Enter</span> = ellenőrzés.</div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="panel" id="statsPanel">
+        <h2>Farm tábla</h2>
+
+        <div class="card">
+          <div class="label">Haladás (termés csík)</div>
+          <div class="bar" aria-label="Haladás sáv"><div id="progressFill"></div></div>
+          <div style="display:flex; justify-content:space-between; margin-top:8px; gap:10px; flex-wrap:wrap;">
+            <div class="tiny" id="progressText">Még nincs futó munka a földön.</div>
+            <div class="tiny" id="scoreText">Jó megoldások: 0</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <div class="label">Bátorító üzenet</div>
+          <div id="encourageBox" class="tiny" style="min-height:56px;">Indítsd el a napot a farmon! 🌾</div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <div class="label">Tipp</div>
+          <div class="tiny">
+            <div>• <b>Könnyű:</b> (a/b)×k = (a·k)/b</div>
+            <div>• <b>Közepes:</b> ha b osztható k-val, akkor (a/b)×k = a/(b/k)</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="panel hidden" id="gamePanel" style="margin-top:14px;">
+      <h2>Feladat</h2>
+
+      <div class="row">
+        <div class="card" style="flex:2; min-width: 280px;">
+          <div class="label">Mit ad a gazdaság?</div>
+          <div class="big" id="taskBox" aria-live="polite"></div>
+          <div class="tiny" style="margin-top:10px;">Válasz: <b>egyszerűsített</b> alakban.</div>
+        </div>
+
+        <div class="card" style="flex:1; min-width: 260px;">
+          <div class="label">Válaszod</div>
+          <input id="answerInput" inputmode="text" autocomplete="off" placeholder="pl. 9/10 vagy 3" />
+
+          <div class="row" style="margin-top:10px;">
+            <button class="btn" id="checkBtn">Ellenőrzés</button>
+            <button class="btn secondary" id="skipBtn" title="Nem számít bele a pontszámba">Kihagyom</button>
+          </div>
+
+          <div class="status" id="feedbackBox" aria-live="polite">
+            <div class="msg" id="feedbackMsg">Kezdheted!</div>
+            <div class="tiny" id="feedbackTiny">Tipp: <span class="kbd">Enter</span> = ellenőrzés</div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="hr" />
+
+      <div class="row">
+        <button class="btn secondary" id="restartBtn">Újrakezdés</button>
+        <button class="btn secondary" id="backBtn">Vissza a menübe</button>
+      </div>
+    </section>
+
+    <footer class="tiny" style="margin:14px 0 4px; text-align:center; color: rgba(42,26,15,.75);">
+      Számolj okosan – nő a termés! 🌱
+    </footer>
+  </div>
+
+  <script>
+    // ---------- Tört segéd ----------
+    function gcd(a,b){ a=Math.abs(a); b=Math.abs(b); while(b){ const t=a%b; a=b; b=t; } return a; }
+    function reduceFrac(n,d){
+      if (d === 0) return {n:0,d:1};
+      if (d < 0){ n=-n; d=-d; }
+      const g = gcd(n,d);
+      return { n:n/g, d:d/g };
+    }
+    function fracToString(f){ return (f.d===1) ? String(f.n) : `${f.n}/${f.d}`; }
+
+    function parseUserFrac(str){
+      if (!str) return null;
+      const s = str.trim().replace(/\s+/g, "");
+      if (/^[+-]?\d+$/.test(s)) return reduceFrac(parseInt(s,10),1);
+      const m = s.match(/^([+-]?\d+)\/([+-]?\d+)$/);
+      if (!m) return null;
+      const n = parseInt(m[1],10), d = parseInt(m[2],10);
+      if (!Number.isFinite(n) || !Number.isFinite(d) || d===0) return null;
+      return reduceFrac(n,d);
+    }
+    function sameFrac(a,b){ return a && b && a.n===b.n && a.d===b.d; }
+
+    function randInt(min,max){ return Math.floor(Math.random()*(max-min+1))+min; }
+    function randChoice(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+    // ---------- Feladatgenerálás ----------
+    // Könnyű: úgy választjuk, hogy (a/b)×k egyszerűen: (a*k)/b és már egyszerűsített is marad.
+    // Ennek érdekében: gcd(k,b)=1 és gcd(a,b)=1 és gcd(a*k, b)=1 -> ha gcd(k,b)=1, elég gcd(a,b)=1.
+    function genEasy(){
+      const k = randChoice([2,3,4,5,6,7,8,9]);
+      let b;
+      // válassz b-t úgy, hogy gcd(k,b)=1 (ne legyen egyszerűsítés a nevezővel)
+      do { b = randInt(3, 18); } while (gcd(k,b) !== 1);
+      let a;
+      do { a = randInt(1, b-1); } while (gcd(a,b) !== 1);
+      const left = reduceFrac(a,b);
+      const ans = reduceFrac(a*k, b);
+      return { type:"easy", frac:left, k, answer: ans };
+    }
+
+    // Közepes: csak a nevező osztásával megoldható: b osztható k-val és a nem osztható k-val.
+    // Választás: b = k * m, és gcd(a,k)=1, így (a/b)×k = a/m, nincs további egyszerűsítés a k-val.
+    function genMedium(){
+      const k = randChoice([2,3,4,5,6,8,9,10,12]);
+      const m = randInt(2, 12);
+      const b = k * m;
+      let a;
+      do { a = randInt(1, b-1); } while (gcd(a, k) !== 1 || gcd(a, b) !== 1);
+      const left = reduceFrac(a,b);
+      const ans = reduceFrac(a, m);
+      return { type:"medium", frac:left, k, answer: ans };
+    }
+
+    function genHard(){
+      // Vegyesen easy/medium
+      return (Math.random() < 0.5) ? genEasy() : genMedium();
+    }
+
+    function generateTask(level){
+      if (level === "easy") return genEasy();
+      if (level === "medium") return genMedium();
+      return genHard();
+    }
+
+    // ---------- Megjelenítés ----------
+    function fracSpan(f){
+      const wrap = document.createElement("span");
+      wrap.className = "fraction";
+      const top = document.createElement("span"); top.className = "top"; top.textContent = f.n;
+      const bot = document.createElement("span"); bot.className = "bot"; bot.textContent = f.d;
+      wrap.appendChild(top); wrap.appendChild(bot);
+      return wrap;
+    }
+
+    function renderTask(t){
+      const box = document.getElementById("taskBox");
+      box.innerHTML = "";
+      // (a/b) × k = ?
+      box.appendChild(fracSpan(t.frac));
+      const mult = document.createElement("span");
+      mult.textContent = " × ";
+      mult.style.margin = "0 8px";
+      box.appendChild(mult);
+      const kk = document.createElement("span");
+      kk.textContent = String(t.k);
+      kk.style.fontWeight = "900";
+      box.appendChild(kk);
+      const eq = document.createElement("span");
+      eq.textContent = " = ?";
+      eq.style.marginLeft = "10px";
+      box.appendChild(eq);
+    }
+
+    function levelName(level){
+      if (level === "easy") return "Gazda Pista (könnyű)";
+      if (level === "medium") return "Molnár Mari (közepes)";
+      return "Vegyes Kihívás (nehéz)";
+    }
+
+    const ENCOURAGE_GOOD = [
+      "Szép munka! Szépen nő a termés! 🌾",
+      "Ügyes! Ezt aratáskor megköszönöd! 🚜",
+      "Remek! Mint egy tökéletes vetés! 🌱",
+      "Nagyon jó! Tele lett a pajta! 🧺",
+      "Ez az! A farmod virágzik! 🐄"
+    ];
+
+    const ENCOURAGE_TRY = [
+      "Semmi gond! Egy-két gaz is belefér. Próbáljuk a következőt!",
+      "Majdnem! Egy kis gyakorlás, és kész a rekord-termés!",
+      "Nem baj! A farmon is van tanulóidő. Menjünk tovább!",
+      "Jó próbálkozás! A következő biztosan sikerül!",
+      "Nem gond! A nap még hosszú, folytassuk!"
+    ];
+
+    const ENCOURAGE_DONE = [
+      "Kész a napi munka! Szép aratás volt! 🌻",
+      "Végeztél! A farmod ma is csúcsformában! 🏆",
+      "Küldetés teljesítve! Megér egy friss pitét! 🥧",
+      "Szuper! Holnap még nagyobb termés jön! 🌤️"
+    ];
+
+    function setEncourage(text){ document.getElementById("encourageBox").textContent = text; }
+
+    function setFeedback(kind, msg, tiny){
+      const m = document.getElementById("feedbackMsg");
+      m.classList.remove("good","bad");
+      if (kind === "good") m.classList.add("good");
+      if (kind === "bad") m.classList.add("bad");
+      m.textContent = msg;
+      document.getElementById("feedbackTiny").textContent = tiny || "";
+    }
+
+    function updateStats(){
+      const pct = state.total ? Math.round((state.index / state.total) * 100) : 0;
+      document.getElementById("progressFill").style.width = `${pct}%`;
+      document.getElementById("progressText").textContent = state.running
+        ? `${levelName(state.level)} • ${state.index}/${state.total} feladat`
+        : "Még nincs futó munka a földön.";
+      document.getElementById("scoreText").textContent = `Jó megoldások: ${state.correct}`;
+    }
+
+    // ---------- Állapot ----------
+    const state = {
+      running:false,
+      level:"easy",
+      total:10,
+      index:0,
+      correct:0,
+      current:null,
+      locked:false
+    };
+
+    function startGame(){
+      state.level = document.getElementById("levelSelect").value;
+      state.total = parseInt(document.getElementById("countSelect").value, 10);
+      state.index = 0;
+      state.correct = 0;
+      state.running = true;
+      state.locked = false;
+
+      document.getElementById("startPanel").classList.add("hidden");
+      document.getElementById("gamePanel").classList.remove("hidden");
+
+      setEncourage("Indul a munka a farmon! Szorozz ügyesen! 💪🌾");
+      nextTask();
+      updateStats();
+    }
+
+    function endGame(){
+      state.running = false;
+      state.locked = true;
+      updateStats();
+      const msg = randChoice(ENCOURAGE_DONE);
+      setEncourage(`${msg} Jó megoldások: ${state.correct}/${state.total}.`);
+      setFeedback("good", `Kész! Eredmény: ${state.correct}/${state.total}`, "Választhatsz új munkát a gombokkal.");
+    }
+
+    function nextTask(){
+      if (!state.running) return;
+      if (state.index >= state.total){ endGame(); return; }
+
+      state.current = generateTask(state.level);
+      state.index += 1;
+      state.locked = false;
+
+      renderTask(state.current);
+      updateStats();
+
+      const input = document.getElementById("answerInput");
+      input.value = "";
+      input.focus();
+      setFeedback("", "Kezdheted!", "Egyszerűsítsd a végeredményt.");
+    }
+
+    function checkAnswer(){
+      if (!state.running || state.locked) return;
+      const user = parseUserFrac(document.getElementById("answerInput").value);
+      if (!user){
+        setFeedback("bad", "Ezt így nem tudom értelmezni.", "Használd: a/b vagy egész szám (pl. 9/10 vagy 3)." );
+        return;
+      }
+
+      const ok = sameFrac(user, state.current.answer);
+      state.locked = true;
+
+      if (ok){
+        state.correct += 1;
+        setFeedback("good", "Helyes! ✅", `Végeredmény: ${fracToString(state.current.answer)}`);
+        setEncourage(randChoice(ENCOURAGE_GOOD));
+      } else {
+        setFeedback("bad", "Most nem talált. ❌", `Helyes: ${fracToString(state.current.answer)} • Te: ${fracToString(user)}`);
+        setEncourage(randChoice(ENCOURAGE_TRY));
+      }
+
+      updateStats();
+      window.clearTimeout(state._t);
+      state._t = window.setTimeout(() => { if (state.running) nextTask(); }, 900);
+    }
+
+    function skipTask(){
+      if (!state.running) return;
+      state.locked = true;
+      setFeedback("", "Kihagytad ezt a sort.", `Megoldás: ${fracToString(state.current.answer)}`);
+      setEncourage("Semmi baj – a következő parcella vár! 🌿");
+      window.clearTimeout(state._t);
+      state._t = window.setTimeout(() => { if (state.running) nextTask(); }, 450);
+    }
+
+    function backToMenu(){
+      state.running = false;
+      state.locked = true;
+      document.getElementById("gamePanel").classList.add("hidden");
+      document.getElementById("startPanel").classList.remove("hidden");
+      setEncourage("Válassz szintet és indulhat egy új farm-nap! 🌞");
+      document.getElementById("progressFill").style.width = "0%";
+      state.correct = 0;
+      updateStats();
+    }
+
+    function restart(){
+      if (state.running){
+        state.index = 0;
+        state.correct = 0;
+        state.locked = false;
+        setEncourage("Újrakezdés! Friss vetés, friss esély! 🌱");
+        nextTask();
+        updateStats();
+      } else {
+        startGame();
+      }
+    }
+
+    // ---------- Események ----------
+    document.getElementById("startBtn").addEventListener("click", startGame);
+    document.getElementById("checkBtn").addEventListener("click", checkAnswer);
+    document.getElementById("skipBtn").addEventListener("click", skipTask);
+    document.getElementById("backBtn").addEventListener("click", backToMenu);
+    document.getElementById("restartBtn").addEventListener("click", restart);
+
+    document.getElementById("answerInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter"){
+        e.preventDefault();
+        checkAnswer();
+      }
+    });
+
+    document.getElementById("howBtn").addEventListener("click", () => {
+      document.getElementById("howBox").classList.toggle("hidden");
+    });
+
+    updateStats();
+  </script>
+</body>
+</html>
